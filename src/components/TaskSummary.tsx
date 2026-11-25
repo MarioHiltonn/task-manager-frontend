@@ -2,25 +2,33 @@ import type { Task } from '../models/task.interface';
 
 interface TaskSummaryProps {
   tasks: Task[];
+  total: number;
 }
 
-export function TaskSummary({ tasks }: TaskSummaryProps) {
-  const completed = tasks.filter(({ status }) => status === 'completed').length;
-  const pending = tasks.length - completed;
+// La API no entrega totales por estado, por eso los conteos de
+// pendientes y completadas corresponden solo a la página actual.
+export function TaskSummary({ tasks, total }: TaskSummaryProps) {
+  const pendingOnPage = tasks.filter(
+    (task) => task.status === 'pending',
+  ).length;
+  const completedOnPage = tasks.length - pendingOnPage;
 
   return (
-    <section className="summary-grid" aria-label="Resumen de tareas">
+    <section
+      className="summary-grid"
+      aria-label="Resumen de tareas"
+    >
       <article className="summary-card">
-        <span>Total</span>
-        <strong>{tasks.length}</strong>
+        <span>Resultados de la consulta</span>
+        <strong>{total}</strong>
       </article>
       <article className="summary-card">
-        <span>Pendientes</span>
-        <strong>{pending}</strong>
+        <span>Pendientes (página actual)</span>
+        <strong>{pendingOnPage}</strong>
       </article>
       <article className="summary-card">
-        <span>Completadas</span>
-        <strong>{completed}</strong>
+        <span>Completadas (página actual)</span>
+        <strong>{completedOnPage}</strong>
       </article>
     </section>
   );
