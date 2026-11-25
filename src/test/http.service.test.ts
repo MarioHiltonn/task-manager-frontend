@@ -6,19 +6,26 @@ import {
   it,
   vi,
 } from 'vitest';
-import {
-  httpRequest,
-  setUnauthorizedHandler,
-} from '../services/http.service';
 
 const fetchMock = vi.fn<typeof fetch>();
 
 describe('http.service', () => {
-  beforeEach(() => {
+  let httpRequest: typeof import('../services/http.service').httpRequest;
+  let setUnauthorizedHandler: typeof import('../services/http.service').setUnauthorizedHandler;
+
+  beforeEach(async () => {
+    vi.resetModules();
+    vi.stubEnv('VITE_API_URL', '');
     vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockReset();
+
+    const mod = await import('../services/http.service');
+    httpRequest = mod.httpRequest;
+    setUnauthorizedHandler = mod.setUnauthorizedHandler;
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.unstubAllGlobals();
   });
 
