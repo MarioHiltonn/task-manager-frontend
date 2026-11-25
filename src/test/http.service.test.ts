@@ -7,6 +7,7 @@ import {
   vi,
 } from 'vitest';
 
+const TEST_API_URL = 'http://localhost:3000/api';
 const fetchMock = vi.fn<typeof fetch>();
 
 describe('http.service', () => {
@@ -15,7 +16,7 @@ describe('http.service', () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    vi.stubEnv('VITE_API_URL', '');
+    vi.stubEnv('VITE_API_URL', TEST_API_URL);
     vi.stubGlobal('fetch', fetchMock);
     fetchMock.mockReset();
 
@@ -42,7 +43,7 @@ describe('http.service', () => {
     const [url, init] = fetchMock.mock.calls[0];
     const headers = new Headers(init?.headers);
 
-    expect(url).toBe('/api/tasks');
+    expect(url).toBe(`${TEST_API_URL}/tasks`);
     expect(headers.get('Accept')).toBe('application/json');
     expect(headers.get('Authorization')).toBe('Bearer token-demo');
   });
