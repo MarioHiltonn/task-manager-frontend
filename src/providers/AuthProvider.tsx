@@ -102,20 +102,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [runValidation],
   );
 
-  // Restauración al cargar la página.
-  useEffect(() => {
-    if (!initialToken) {
-      return;
+ // Restauración al cargar la página.
+useEffect(() => {
+  if (!initialToken) {
+    return;
+  }
+
+  const controller = new AbortController();
+
+  const validateSession = async () => {
+    await Promise.resolve();
+    if (!controller.signal.aborted) {
+      await runValidation(initialToken, controller.signal);
     }
+  };
 
-    const controller = new AbortController();
+  void validateSession();
 
-    void runValidation(initialToken, controller.signal);
-
-    return () => {
-      controller.abort();
-    };
-  }, [initialToken, runValidation]);
+  return () => {
+    controller.abort();
+  };
+}, [initialToken, runValidation]);
 
   const login = useCallback(
     async (credentials: LoginCredentials): Promise<AuthUser> => {
